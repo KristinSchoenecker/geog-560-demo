@@ -1,6 +1,6 @@
 # In this project, we will see how people have been responding to tweets from official 'Adopt a Drain' twitter accounts.
 # We will make a word cloud of words used at least twice by the tweeters, minus common words.
-# I have already downloaded tweet responses from March 2020 - March 2023 and put them in the CSV file 'Replies.csv'
+# I have already downloaded tweet responses from March 2021 - March 2023 and put them in the CSV file 'Replies.csv'
 
 # Load Necessary Packages
 library("NLP")
@@ -18,19 +18,28 @@ str(AaD_Twitter_Reply_Data)
 # Isolate replies from tweets
 AaD_Replies <- AaD_Twitter_Reply_Data$Reply
 
-# Remove URLs and special characters from replies (except for apostrophes)
-AaD_Replies <- rm_twitter_url(AaD_Replies)
-AaD_Replies <- gsub("[^A-Za-z]", " ", AaD_Replies)
-AaD_Replies <- gsub("can t", "cannot", AaD_Replies)
-AaD_Replies <- gsub("won t", "will not", AaD_Replies)
-AaD_Replies <- gsub("isn t", "is not", AaD_Replies)
-AaD_Replies <- gsub("I m", "I am", AaD_Replies)
-AaD_Replies <- gsub("It s", "It is", AaD_Replies)
+# Create a function to remove URLs and special characters from replies, and fix contractions
+clean_tweets <- function(tweets) {
+  # Remove URLs
+  tweets <- rm_twitter_url(tweets)
+  # Remove special characters because emojis mess up analysis!
+  tweets <- gsub("[^A-Za-z]", " ", tweets)  
+  # Fix contractions
+  tweets <- gsub("can t", "cannot", tweets)     
+  tweets <- gsub("won t", "will not", tweets)   
+  tweets <- gsub("isn t", "is not", tweets)
+  tweets <- gsub("I m", "I am", tweets)
+  tweets <- gsub("It s", "It is", tweets)
+  return(tweets)
+}
 
-# Make a vector source from AaD_Messages
+# Run AaD_Replies through clean_tweets
+AaD_Replies <- clean_tweets(AaD_Replies)
+
+# Make a vector source from AaD_Replies
 Reply_source <- VectorSource(AaD_Replies)
 
-# Make a volatile corpus from AaD_source so that changes only affect data stored in R memory
+# Make a volatile corpus from Reply_source so that changes only affect data stored in R memory
 Reply_corpus <- VCorpus(Reply_source)
 
 # Create a function to clean text
