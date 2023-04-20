@@ -47,7 +47,7 @@ clean_corpus <- function(corpus) {
   # Transform to lower case
   corpus <- tm_map(corpus, content_transformer(tolower))
   # Remove unnecessary words
-  corpus <- tm_map(corpus, removeWords, words = stops)
+  corpus <- tm_map(corpus, removeWords, words=stopwords("en"))
   return(corpus)
 }
 
